@@ -1,203 +1,47 @@
-:root {
-    --primary: #e50914;
-    --bg-black: #141414;
-    --bg-dark: #0f0f0f;
-    --bg-panel: #1f1f1f;
-    --text-white: #ffffff;
-    --text-gray: #b3b3b3;
-    --font-main: 'Roboto', sans-serif;
-    --nav-height: 60px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
+/* Base Config */
 body {
-    background-color: var(--bg-black);
-    color: var(--text-white);
-    font-family: var(--font-main);
+    font-family: 'Outfit', sans-serif;
+    background-color: #0f0f0f;
+    color: #ffffff;
     overflow-x: hidden;
-    padding-top: var(--nav-height); /* Space for fixed navbar */
 }
 
-/* NAVBAR RESPONSIVE */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 4%;
-    height: var(--nav-height);
-    background: rgba(20, 20, 20, 0.95);
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
+/* Custom Scrollbar (Chrome/Safari/Edge) */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0f0f0f; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #e50914; }
 
-.nav-left { display: flex; align-items: center; gap: 20px; }
-.logo { font-size: 24px; font-weight: 800; color: var(--primary); text-decoration: none; letter-spacing: 1px; }
+/* Hide Scrollbar but keep functionality (for swiper containers) */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-.nav-links { display: flex; list-style: none; gap: 20px; }
-.nav-links a { color: var(--text-gray); text-decoration: none; font-size: 14px; transition: 0.3s; }
-.nav-links a:hover, .nav-links a.active { color: white; }
-
-.nav-right { display: flex; align-items: center; gap: 15px; }
-
-/* Mobile Menu Toggle */
-.menu-toggle { display: none; font-size: 20px; cursor: pointer; color: white; }
-
-/* HOME HERO SECTION */
-.hero {
-    height: 70vh;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-}
-.hero::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to top, var(--bg-black) 10%, transparent 80%);
-}
-.hero-content {
-    position: relative; z-index: 2; padding: 0 4% 40px;
-    max-width: 600px;
-}
-.hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 10px; line-height: 1.1; }
-.hero-meta { display: flex; gap: 10px; font-size: 0.9rem; color: var(--text-gray); margin-bottom: 15px; align-items: center; }
-.badge { border: 1px solid var(--text-gray); padding: 1px 4px; font-size: 0.7rem; border-radius: 2px; }
-
-.hero-buttons .btn {
-    padding: 10px 24px; border: none; border-radius: 4px; 
-    font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
-    text-decoration: none; transition: 0.2s;
-}
-.btn-primary { background: var(--primary); color: white; }
-.btn-secondary { background: rgba(255,255,255,0.2); color: white; margin-left: 10px; }
-
-/* CARD GRID (Vertical Poster Style) */
-.section-title { padding: 20px 4% 10px; font-size: 1.2rem; font-weight: 600; color: white; }
-.grid-layout {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 15px;
-    padding: 0 4% 40px;
-}
-.card { position: relative; cursor: pointer; transition: transform 0.2s; }
-.card:hover { transform: scale(1.05); z-index: 10; }
-.card-image-wrapper { aspect-ratio: 2/3; border-radius: 6px; overflow: hidden; background: #222; }
-.card img { width: 100%; height: 100%; object-fit: cover; }
-
-/* === PLAYER LAYOUT (VERTICAL & RESPONSIVE) === */
-.player-container {
-    display: flex;
-    flex-direction: row; /* Desktop: Side by Side */
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    gap: 20px;
-    min-height: calc(100vh - var(--nav-height));
-}
-
-/* Kiri: Video Wrapper */
-.video-section {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.video-frame {
-    width: 100%;
-    max-width: 500px; /* Batasi lebar agar mirip HP di desktop */
-    aspect-ratio: 9/16; /* Rasio Vertikal TikTok/Shorts */
-    background: black;
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-video { width: 100%; height: 100%; object-fit: cover; }
-
-/* Kanan: Playlist */
-.playlist-section {
-    flex: 1;
-    background: var(--bg-panel);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    height: 85vh; /* Fixed height agar scrollable */
+/* Text Clamp (Potong teks panjang) */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.playlist-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); }
-.playlist-body { flex: 1; overflow-y: auto; padding: 10px; }
-
-.episode-item {
-    display: flex; gap: 12px; padding: 12px; 
-    border-radius: 8px; cursor: pointer; transition: 0.2s;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+/* Glassmorphism Utilities */
+.glass {
+    background: rgba(20, 20, 20, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
-.episode-item:hover { background: rgba(255,255,255,0.1); }
-.episode-item.active { background: rgba(229, 9, 20, 0.15); border-left: 3px solid var(--primary); }
 
-.ep-thumb { width: 80px; height: 110px; object-fit: cover; border-radius: 4px; background: #333; }
-.ep-info { display: flex; flex-direction: column; justify-content: center; }
-.ep-num { font-size: 16px; font-weight: bold; color: white; }
-.ep-dur { font-size: 12px; color: var(--text-gray); margin-top: 4px; }
-
-/* VIDEO CONTROLS CUSTOM */
-.video-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 40%);
-    display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 20px; opacity: 0; transition: 0.3s;
+/* Video Player Range Input Reset */
+input[type=range] {
+    -webkit-appearance: none; background: transparent; cursor: pointer;
 }
-.video-frame:hover .video-overlay, 
-.video-frame.paused .video-overlay { opacity: 1; }
-
-.progress-area { width: 100%; height: 5px; background: rgba(255,255,255,0.3); cursor: pointer; border-radius: 5px; margin-bottom: 15px; position: relative; }
-.progress-fill { height: 100%; background: var(--primary); width: 0%; border-radius: 5px; position: relative; }
-.progress-fill::after { content:''; position: absolute; right: -5px; top: -3px; width: 12px; height: 12px; background: white; border-radius: 50%; transform: scale(0); transition: 0.2s; }
-.progress-area:hover .progress-fill::after { transform: scale(1); }
-
-.ctrl-row { display: flex; justify-content: space-between; align-items: center; }
-.ctrl-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; width: 40px; }
-.time-txt { font-size: 0.8rem; margin-left: 10px; font-weight: 600; }
-
-/* === MOBILE RESPONSIVE CSS === */
-@media (max-width: 768px) {
-    .nav-links { display: none; } /* Hide menu on mobile simple */
-    .menu-toggle { display: block; }
-    
-    .hero { height: 50vh; }
-    .grid-layout { grid-template-columns: repeat(3, 1fr); gap: 10px; } /* 3 kolom di HP */
-
-    /* Player Mobile Layout: Stacked */
-    .player-container {
-        flex-direction: column;
-        padding: 0;
-        margin: 0;
-    }
-
-    .video-section { flex: none; width: 100%; position: sticky; top: var(--nav-height); z-index: 10; }
-    .video-frame {
-        max-width: 100%;
-        border-radius: 0;
-        aspect-ratio: 9/16; 
-        /* Optional: jika ingin full screen height di mobile */
-        /* height: calc(100vh - var(--nav-height)); */
-    }
-
-    .playlist-section {
-        flex: none;
-        height: auto;
-        border-radius: 0;
-        margin-top: -5px; /* Hilangkan gap */
-    }
-
-    .episode-item { padding: 10px; }
-    .ep-thumb { width: 60px; height: 80px; }
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; height: 12px; width: 12px;
+    border-radius: 50%; background: #e50914; margin-top: -4px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%; height: 4px; background: #444; border-radius: 2px;
 }
