@@ -1,4 +1,4 @@
-<%- include('layouts/main', { body: `
+<%- include('partials/header') %>
     <div class="cinema-mode">
         <div class="episodes-sidebar" id="episodesSidebar">
             <div class="sidebar-header">
@@ -6,23 +6,25 @@
                 <span class="total"><%= detail.totalEpisode %> Eps</span>
             </div>
             <div class="episodes-list">
-                <% detail.shortPlayEpisodeInfos.forEach(ep => { %>
-                    <div class="episode-item" 
-                         data-src="<%= ep.playVoucher %>" 
-                         data-id="<%= ep.episodeId %>"
-                         data-no="<%= ep.episodeNo %>"
-                         onclick="playEpisode(this)">
-                        <span class="ep-num"><%= ep.episodeNo %></span>
-                        <div class="ep-img">
-                            <img src="<%= ep.episodeCover %>" loading="lazy">
-                            <i class="fas fa-play-circle"></i>
+                <% if(detail.shortPlayEpisodeInfos) { %>
+                    <% detail.shortPlayEpisodeInfos.forEach(ep => { %>
+                        <div class="episode-item" 
+                             data-src="<%= ep.playVoucher %>" 
+                             data-id="<%= ep.episodeId %>"
+                             data-no="<%= ep.episodeNo %>"
+                             onclick="playEpisode(this)">
+                            <span class="ep-num"><%= ep.episodeNo %></span>
+                            <div class="ep-img">
+                                <img src="<%= ep.episodeCover %>" loading="lazy">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="ep-info">
+                                <span>Episode <%= ep.episodeNo %></span>
+                                <small><%= ep.playClarity %></small>
+                            </div>
                         </div>
-                        <div class="ep-info">
-                            <span>Episode <%= ep.episodeNo %></span>
-                            <small><%= ep.playClarity %></small>
-                        </div>
-                    </div>
-                <% }) %>
+                    <% }) %>
+                <% } %>
             </div>
         </div>
 
@@ -76,7 +78,7 @@
     </div>
     
     <script>
-        const PLAYLIST = <%- JSON.stringify(detail.shortPlayEpisodeInfos) %>;
+        const PLAYLIST = <%- JSON.stringify(detail.shortPlayEpisodeInfos || []) %>;
         const SERIES_ID = "<%= detail.shortPlayId %>";
     </script>
-`}) %>
+<%- include('partials/footer') %>
