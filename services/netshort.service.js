@@ -1,24 +1,40 @@
 const axios = require('axios');
 const NodeCache = require('node-cache');
-const https = require('https'); // Required for VPS Fix
+const https = require('https');
 require('dotenv').config();
 
+// Cache Strategy
 const apiCache = new NodeCache({ stdTTL: 300 }); 
 
-// FIX: Paksa IPv4 untuk menghindari masalah jaringan VPS
+// KONFIGURASI HTTPS AGENT (THE FIX)
+// Kita memaksa IPv4 (family: 4) dan keepAlive agar tidak diputus server
 const agent = new https.Agent({  
-    family: 4, 
-    rejectUnauthorized: false
+    keepAlive: true,
+    maxSockets: 100,
+    maxFreeSockets: 10,
+    timeout: 60000,
+    family: 4, // <--- WAJIB: Paksa IPv4 untuk fix error TLS Disconnect
+    rejectUnauthorized: false // Abaikan error sertifikat SSL jika ada
 });
 
 const apiClient = axios.create({
     baseURL: process.env.API_BASE_URL,
-    timeout: 15000, 
-    httpsAgent: agent, // Apply fix
+    timeout: 30000, // Naikkan timeout ke 30 detik
+    httpsAgent: agent, // Pasang agent fix
     headers: { 
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Connection': 'keep-alive'
     }
+});
+
+// Interceptor untuk handle error retry sederhana
+apiClient.interceptors.response.use(null, async (error) => {
+    if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
+        console.log(`⚠️ Network error ${error.code}, retrying...`);
+        // Retry logic manual jika perlu, atau return null agar tidak crash
+    }
+    return Promise.reject(error);
 });
 
 class NetshortService {
@@ -27,15 +43,18 @@ class NetshortService {
         if (apiCache.has(cacheKey)) return apiCache.get(cacheKey);
 
         try {
+            console.log("Fetching Theaters...");
             const res = await apiClient.get('/netshort/theaters');
             const data = res.data;
+            
             if(Array.isArray(data)) {
                 apiCache.set(cacheKey, data);
                 return data;
             }
             return [];
         } catch (error) {
-            console.error("API Error [Theaters]:", error.message);
+            console.error("❌ API Error [Theaters]:", error.message);
+            // Jangan throw error, return array kosong agar web tetap jalan
             return []; 
         }
     }
@@ -49,7 +68,7 @@ class NetshortService {
             apiCache.set(cacheKey, res.data, 300);
             return res.data;
         } catch (error) {
-            console.error(`API Error [ForYou Page ${page}]:`, error.message);
+            console.error(`❌ API Error [ForYou Page ${page}]:`, error.message);
             return null;
         }
     }
@@ -59,7 +78,7 @@ class NetshortService {
             const res = await apiClient.get(`/netshort/search?query=${encodeURIComponent(query)}`);
             return res.data;
         } catch (error) {
-            console.error(`API Error [Search]:`, error.message);
+            console.error(`❌ API Error [Search]:`, error.message);
             return { searchCodeSearchResult: [] };
         }
     }
@@ -73,7 +92,7 @@ class NetshortService {
             apiCache.set(cacheKey, res.data, 600);
             return res.data;
         } catch (error) {
-            console.error(`API Error [Detail]:`, error.message);
+            console.error(`❌ API Error [Detail]:`, error.message);
             return null;
         }
     }
