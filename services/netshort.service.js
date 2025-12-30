@@ -1,17 +1,24 @@
 const axios = require('axios');
 const NodeCache = require('node-cache');
+const https = require('https'); // Required for VPS Fix
 require('dotenv').config();
 
-// Cache Strategy: 
-// Theaters/Home: 5 min TTL
-// Detail: 10 min TTL
-// Search: 0 TTL
 const apiCache = new NodeCache({ stdTTL: 300 }); 
+
+// FIX: Paksa IPv4 untuk menghindari masalah jaringan VPS
+const agent = new https.Agent({  
+    family: 4, 
+    rejectUnauthorized: false
+});
 
 const apiClient = axios.create({
     baseURL: process.env.API_BASE_URL,
-    timeout: 10000,
-    headers: { 'User-Agent': 'PanStream/1.0' }
+    timeout: 15000, 
+    httpsAgent: agent, // Apply fix
+    headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json'
+    }
 });
 
 class NetshortService {
@@ -22,12 +29,14 @@ class NetshortService {
         try {
             const res = await apiClient.get('/netshort/theaters');
             const data = res.data;
-            // Filter empty contentInfos logic handled here or in controller
-            apiCache.set(cacheKey, data);
-            return data;
+            if(Array.isArray(data)) {
+                apiCache.set(cacheKey, data);
+                return data;
+            }
+            return [];
         } catch (error) {
             console.error("API Error [Theaters]:", error.message);
-            return []; // Fail gracefully
+            return []; 
         }
     }
 
@@ -37,9 +46,8 @@ class NetshortService {
 
         try {
             const res = await apiClient.get(`/netshort/foryou?page=${page}`);
-            const data = res.data;
-            apiCache.set(cacheKey, data, 300); // 5 min
-            return data;
+            apiCache.set(cacheKey, res.data, 300);
+            return res.data;
         } catch (error) {
             console.error(`API Error [ForYou Page ${page}]:`, error.message);
             return null;
@@ -47,12 +55,11 @@ class NetshortService {
     }
 
     async search(query) {
-        // NO CACHE for Realtime Search
         try {
             const res = await apiClient.get(`/netshort/search?query=${encodeURIComponent(query)}`);
             return res.data;
         } catch (error) {
-            console.error(`API Error [Search ${query}]:`, error.message);
+            console.error(`API Error [Search]:`, error.message);
             return { searchCodeSearchResult: [] };
         }
     }
@@ -63,11 +70,10 @@ class NetshortService {
 
         try {
             const res = await apiClient.get(`/netshort/allepisode?shortPlayId=${shortPlayId}`);
-            const data = res.data;
-            apiCache.set(cacheKey, data, 600); // Cache detail longer
-            return data;
+            apiCache.set(cacheKey, res.data, 600);
+            return res.data;
         } catch (error) {
-            console.error(`API Error [Detail ${shortPlayId}]:`, error.message);
+            console.error(`API Error [Detail]:`, error.message);
             return null;
         }
     }
