@@ -1,0 +1,23 @@
+<div class="card" onclick="window.location.href='/watch/<%= item.shortPlayId %>'">
+    <div class="card-image-wrapper">
+        <img src="<%= item.shortPlayCover || item.shortPlayCoverUrl || 'https://via.placeholder.com/300x400?text=No+Cover' %>" alt="<%= item.shortPlayName %>" loading="lazy">
+    </div>
+    <div class="card-info">
+        <h4><%= item.shortPlayName %></h4>
+        <div class="meta">
+            <span class="match"><%= item.heatScoreShow || item.formatHeatScore || '98%' %> Match</span>
+            <span class="badge"><%= item.scriptName || 'HD' %></span>
+        </div>
+        <ul class="tags">
+            <% if (item.labelArray) { %>
+                <% item.labelArray.slice(0, 2).forEach(tag => { %>
+                    <li><%= tag %></li>
+                <% }) %>
+            <% } else if (item.labelNameList) { %>
+                <% item.labelNameList.slice(0, 2).forEach(tag => { %>
+                    <li><%= tag %></li>
+                <% }) %>
+            <% } %>
+        </ul>
+    </div>
+</div>
