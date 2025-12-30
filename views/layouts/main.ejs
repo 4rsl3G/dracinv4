@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/panstream.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">PANSTREAM</a>
+            <ul class="nav-links">
+                <li><a href="/" class="<%= page === 'home' ? 'active' : '' %>">Home</a></li>
+                <li><a href="/browse" class="<%= page === 'browse' ? 'active' : '' %>">TV Shows</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Titles, people, genres">
+                <div id="searchResults" class="search-dropdown hidden"></div>
+            </div>
+            <div class="profile">
+                <img src="https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-qo9h82134t9nv0j0.jpg" alt="User">
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <%- typeof body !== 'undefined' ? body : '' %>
+    </main>
+
+    <script src="/js/app.js"></script>
+    <% if (page === 'player') { %>
+        <script src="/js/player.js"></script>
+    <% } %>
+</body>
+</html>
