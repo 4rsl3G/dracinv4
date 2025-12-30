@@ -2,76 +2,81 @@ const axios = require('axios');
 const https = require('https');
 require('dotenv').config();
 
-// HAPUS NODE-CACHE
-// const NodeCache = require('node-cache'); 
-// const apiCache = new NodeCache({ stdTTL: 300 }); 
-
-// KONFIGURASI HTTPS AGENT (TETAP WAJIB ADA UNTUK VPS)
-// Ini agar tidak error "socket disconnected"
+// CONFIG HTTPS AGENT: LEBIH AGRESIF
 const agent = new https.Agent({  
-    keepAlive: true,
-    maxSockets: 100,
-    maxFreeSockets: 10,
-    timeout: 60000,
-    family: 4, // WAJIB: Paksa IPv4
-    rejectUnauthorized: false 
+    family: 4, // Paksa IPv4
+    rejectUnauthorized: false, // Abaikan SSL error
+    keepAlive: false, // Matikan keep-alive untuk memastikan koneksi fresh tiap request
+    servername: 'netshort.sansekai.my.id', // FIX SNI: Kasih tahu server tujuan nama domainnya manual
 });
 
 const apiClient = axios.create({
     baseURL: process.env.API_BASE_URL,
-    timeout: 30000, // 30 Detik timeout
+    timeout: 60000, // 60 Detik
     httpsAgent: agent,
     headers: { 
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'application/json',
-        'Connection': 'keep-alive'
+        'Connection': 'close' // Paksa close connection setelah selesai
     }
 });
 
+// FUNGSI WRAPPER RETRY (DICOBA 3 KALI JIKA GAGAL)
+async function fetchWithRetry(endpoint, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            console.log(`📡 Fetching ${endpoint} (Attempt ${i + 1}/${retries})...`);
+            const res = await apiClient.get(endpoint);
+            return res.data;
+        } catch (error) {
+            const isLastAttempt = i === retries - 1;
+            console.error(`⚠️ Error ${endpoint} (Attempt ${i + 1}): ${error.message}`);
+            
+            if (isLastAttempt) throw error; // Lempar error jika sudah habis limit retry
+            
+            // Tunggu 1 detik sebelum coba lagi
+            await new Promise(r => setTimeout(r, 1000));
+        }
+    }
+}
+
 class NetshortService {
     async getTheaters() {
-        // LANGSUNG HIT API (NO CACHE CHECK)
         try {
-            console.log("Fetching Theaters (Realtime)...");
-            const res = await apiClient.get('/netshort/theaters');
-            return res.data || [];
+            const data = await fetchWithRetry('/netshort/theaters');
+            return data || [];
         } catch (error) {
-            console.error("❌ API Error [Theaters]:", error.message);
-            return []; 
+            console.error("❌ FINAL API Error [Theaters]:", error.message);
+            return []; // Return kosong biar web gak crash
         }
     }
 
     async getForYou(page = 1) {
-        // LANGSUNG HIT API
         try {
-            console.log(`Fetching ForYou Page ${page} (Realtime)...`);
-            const res = await apiClient.get(`/netshort/foryou?page=${page}`);
-            return res.data;
+            const data = await fetchWithRetry(`/netshort/foryou?page=${page}`);
+            return data;
         } catch (error) {
-            console.error(`❌ API Error [ForYou Page ${page}]:`, error.message);
+            console.error(`❌ FINAL API Error [ForYou ${page}]:`, error.message);
             return null;
         }
     }
 
     async search(query) {
-        // SEARCH MEMANG TIDAK PERNAH DI-CACHE
         try {
-            const res = await apiClient.get(`/netshort/search?query=${encodeURIComponent(query)}`);
-            return res.data;
+            const data = await fetchWithRetry(`/netshort/search?query=${encodeURIComponent(query)}`);
+            return data;
         } catch (error) {
-            console.error(`❌ API Error [Search]:`, error.message);
+            console.error(`❌ FINAL API Error [Search]:`, error.message);
             return { searchCodeSearchResult: [] };
         }
     }
 
     async getDetail(shortPlayId) {
-        // LANGSUNG HIT API
         try {
-            console.log(`Fetching Detail ${shortPlayId} (Realtime)...`);
-            const res = await apiClient.get(`/netshort/allepisode?shortPlayId=${shortPlayId}`);
-            return res.data;
+            const data = await fetchWithRetry(`/netshort/allepisode?shortPlayId=${shortPlayId}`);
+            return data;
         } catch (error) {
-            console.error(`❌ API Error [Detail]:`, error.message);
+            console.error(`❌ FINAL API Error [Detail]:`, error.message);
             return null;
         }
     }
