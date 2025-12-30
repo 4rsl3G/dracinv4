@@ -1,16 +1,15 @@
-<%- include('layouts/main', { body: `
+<%- include('partials/header') %>
     <div class="browse-container">
         <h2 class="page-title">Browse All Series</h2>
         <div class="grid-layout" id="browseGrid">
-            <% initialData.forEach(item => { %>
-                <%- include('components/card', { item: item }) %>
-            <% }) %>
+            <% if (initialData && initialData.length > 0) { %>
+                <% initialData.forEach(item => { %>
+                    <%- include('components/card', { item: item }) %>
+                <% }) %>
+            <% } %>
         </div>
         <div id="loadingIndicator" class="loading-spinner hidden"></div>
         <div id="endMessage" class="end-msg hidden">You've reached the end!</div>
     </div>
-    
-    <script>
-        window.BROWSE_MODE = true;
-    </script>
-`}) %>
+    <script>window.BROWSE_MODE = true;</script>
+<%- include('partials/footer') %>
