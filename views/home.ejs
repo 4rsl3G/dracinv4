@@ -1,0 +1,36 @@
+<%- include('layouts/main', { body: `
+    <% if (hero) { %>
+    <header class="hero" style="background-image: linear-gradient(to top, #0b0b0b, transparent 50%), url('<%= hero.shortPlayCover %>')">
+        <div class="hero-content">
+            <h1><%= hero.shortPlayName %></h1>
+            <div class="hero-meta">
+                <span class="match-score"><%= hero.heatScoreShow %> Views</span>
+                <span class="year">2025</span>
+                <span class="hd-badge">4K Ultra HD</span>
+            </div>
+            <p class="hero-desc">Experience the drama. Watch the most viral short plays trending right now on PanStream.</p>
+            <div class="hero-buttons">
+                <a href="/watch/<%= hero.shortPlayId %>" class="btn btn-primary"><i class="fas fa-play"></i> Play</a>
+                <button class="btn btn-secondary"><i class="fas fa-info-circle"></i> More Info</button>
+            </div>
+        </div>
+    </header>
+    <% } %>
+
+    <div class="rows-container">
+        <% theaters.forEach(group => { %>
+            <div class="row-section">
+                <h3 class="row-title"><%= group.contentName %></h3>
+                <div class="slider-wrapper">
+                    <button class="handle left-handle"><i class="fas fa-chevron-left"></i></button>
+                    <div class="slider">
+                        <% group.contentInfos.forEach(item => { %>
+                            <%- include('components/card', { item: item }) %>
+                        <% }) %>
+                    </div>
+                    <button class="handle right-handle"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+`}) %>
