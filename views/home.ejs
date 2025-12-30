@@ -1,4 +1,5 @@
-<%- include('layouts/main', { body: `
+<%- include('partials/header') %>
+
     <% if (hero) { %>
     <header class="hero" style="background-image: linear-gradient(to top, #0b0b0b, transparent 50%), url('<%= hero.shortPlayCover %>')">
         <div class="hero-content">
@@ -18,19 +19,28 @@
     <% } %>
 
     <div class="rows-container">
-        <% theaters.forEach(group => { %>
-            <div class="row-section">
-                <h3 class="row-title"><%= group.contentName %></h3>
-                <div class="slider-wrapper">
-                    <button class="handle left-handle"><i class="fas fa-chevron-left"></i></button>
-                    <div class="slider">
-                        <% group.contentInfos.forEach(item => { %>
-                            <%- include('components/card', { item: item }) %>
-                        <% }) %>
+        <% if (theaters && theaters.length > 0) { %>
+            <% theaters.forEach(group => { %>
+                <div class="row-section">
+                    <h3 class="row-title"><%= group.contentName %></h3>
+                    <div class="slider-wrapper">
+                        <button class="handle left-handle"><i class="fas fa-chevron-left"></i></button>
+                        <div class="slider">
+                            <% if (group.contentInfos) { %>
+                                <% group.contentInfos.forEach(item => { %>
+                                    <%- include('components/card', { item: item }) %>
+                                <% }) %>
+                            <% } %>
+                        </div>
+                        <button class="handle right-handle"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <button class="handle right-handle"><i class="fas fa-chevron-right"></i></button>
                 </div>
+            <% }) %>
+        <% } else { %>
+            <div style="padding: 100px; text-align: center; color: #666;">
+                <h3>Content currently unavailable from source.</h3>
             </div>
-        <% }) %>
+        <% } %>
     </div>
-`}) %>
+
+<%- include('partials/footer') %>
