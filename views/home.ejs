@@ -1,46 +1,42 @@
 <%- include('partials/header') %>
 
-    <% if (hero) { %>
-    <header class="hero" style="background-image: linear-gradient(to top, #0b0b0b, transparent 50%), url('<%= hero.shortPlayCover %>')">
-        <div class="hero-content">
-            <h1><%= hero.shortPlayName %></h1>
-            <div class="hero-meta">
-                <span class="match-score"><%= hero.heatScoreShow %> Views</span>
-                <span class="year">2025</span>
-                <span class="hd-badge">4K Ultra HD</span>
-            </div>
-            <p class="hero-desc">Experience the drama. Watch the most viral short plays trending right now on PanStream.</p>
-            <div class="hero-buttons">
-                <a href="/watch/<%= hero.shortPlayId %>" class="btn btn-primary"><i class="fas fa-play"></i> Play</a>
-                <button class="btn btn-secondary"><i class="fas fa-info-circle"></i> More Info</button>
-            </div>
+<% if (hero) { %>
+<header class="hero" style="background-image: url('<%= hero.shortPlayCover %>')">
+    <div class="hero-content">
+        <h1><%= hero.shortPlayName %></h1>
+        <div class="hero-meta">
+            <span class="badge">4K</span>
+            <span><%= hero.heatScoreShow %> Views</span>
+            <span>2025</span>
         </div>
-    </header>
-    <% } %>
-
-    <div class="rows-container">
-        <% if (theaters && theaters.length > 0) { %>
-            <% theaters.forEach(group => { %>
-                <div class="row-section">
-                    <h3 class="row-title"><%= group.contentName %></h3>
-                    <div class="slider-wrapper">
-                        <button class="handle left-handle"><i class="fas fa-chevron-left"></i></button>
-                        <div class="slider">
-                            <% if (group.contentInfos) { %>
-                                <% group.contentInfos.forEach(item => { %>
-                                    <%- include('components/card', { item: item }) %>
-                                <% }) %>
-                            <% } %>
-                        </div>
-                        <button class="handle right-handle"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
-            <% }) %>
-        <% } else { %>
-            <div style="padding: 100px; text-align: center; color: #666;">
-                <h3>Content currently unavailable from source.</h3>
-            </div>
-        <% } %>
+        <div class="hero-buttons">
+            <a href="/watch/<%= hero.shortPlayId %>" class="btn btn-primary"><i class="fas fa-play"></i> Watch Now</a>
+            <button class="btn btn-secondary"><i class="fas fa-plus"></i> List</button>
+        </div>
     </div>
+</header>
+<% } %>
+
+<div class="main-content">
+    <% if (theaters && theaters.length > 0) { %>
+        <% theaters.forEach(group => { %>
+            <% if (group.contentInfos && group.contentInfos.length > 0) { %>
+                <h2 class="section-title"><%= group.contentName %></h2>
+                <div class="grid-layout">
+                    <% group.contentInfos.forEach(item => { %>
+                        <div class="card" onclick="window.location.href='/watch/<%= item.shortPlayId %>'">
+                            <div class="card-image-wrapper">
+                                <img src="<%= item.shortPlayCover %>" alt="<%= item.shortPlayName %>" loading="lazy">
+                            </div>
+                            <div style="padding: 8px 0;">
+                                <h4 style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><%= item.shortPlayName %></h4>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        <% }) %>
+    <% } %>
+</div>
 
 <%- include('partials/footer') %>
